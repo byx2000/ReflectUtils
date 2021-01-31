@@ -46,23 +46,15 @@ public class A
         this.finish = finish;
     }
 
-    /*public A(Integer age, boolean finish)
+    public static int getInt()
     {
-        this.age = age;
-        this.finish = finish;
+        return 7749;
     }
 
-    public A(int age, Boolean finish)
+    public static A create(int n)
     {
-        this.age = age;
-        this.finish = finish;
+        return new A(n);
     }
-
-    public A(Integer age, Boolean finish)
-    {
-        this.age = age;
-        this.finish = finish;
-    }*/
 
     public int getAge()
     {

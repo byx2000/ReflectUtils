@@ -1,6 +1,7 @@
 package byx.util.reflect;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,5 +74,28 @@ public class ReflectUtils
             catch (Exception ignored) {}
         }
         throw new RuntimeException("No matching constructor.");
+    }
+
+    /**
+     * 调用静态方法
+     * @param type 类型
+     * @param methodName 方法名
+     * @param params 参数
+     * @return 静态方法的返回值
+     */
+    public static Object call(Class<?> type, String methodName, Object... params)
+    {
+        for (Method method : type.getMethods())
+        {
+            if (method.getName().equals(methodName))
+            {
+                try
+                {
+                    return method.invoke(null, params);
+                }
+                catch (Exception ignored) {}
+            }
+        }
+        throw new RuntimeException("No matching static method.");
     }
 }
