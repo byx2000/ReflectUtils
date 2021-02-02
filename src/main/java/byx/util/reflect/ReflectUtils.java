@@ -96,18 +96,26 @@ public class ReflectUtils
      */
     public static Object call(Class<?> type, String methodName, Object... params)
     {
-        for (Method method : type.getMethods())
+        try
         {
-            if (method.getName().equals(methodName))
-            {
-                try
-                {
-                    return method.invoke(null, params);
-                }
-                catch (Exception ignored) {}
-            }
+            Method method = type.getMethod(methodName, getTypes(params));
+            return method.invoke(null, params);
         }
-        throw new RuntimeException("No matching static method.");
+        catch (Exception e)
+        {
+            for (Method method : type.getMethods())
+            {
+                if (method.getName().equals(methodName) && method.getParameterCount() == params.length)
+                {
+                    try
+                    {
+                        return method.invoke(null, params);
+                    }
+                    catch (Exception ignored) {}
+                }
+            }
+            throw new RuntimeException("No matching static method.");
+        }
     }
 
     private static Class<?>[] getTypes(Object... params)
