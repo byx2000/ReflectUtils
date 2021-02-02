@@ -1,6 +1,7 @@
 package byx.util.reflect.test;
 
 import static byx.util.reflect.ReflectUtils.*;
+import byx.util.reflect.test.classes.Test1;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,6 +29,6 @@ public class IsPrimitiveTest
         assertFalse(isPrimitive(Boolean.class));
 
         assertFalse(isPrimitive(String.class));
-        assertFalse(isPrimitive(A.class));
+        assertFalse(isPrimitive(Test1.class));
     }
 }

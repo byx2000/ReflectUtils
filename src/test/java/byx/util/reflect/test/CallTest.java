@@ -1,6 +1,7 @@
 package byx.util.reflect.test;
 
 import static byx.util.reflect.ReflectUtils.*;
+import byx.util.reflect.test.classes.Test2;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,14 +10,14 @@ public class CallTest
     @Test
     public void test()
     {
-        int i = (int) call(A.class, "getInt");
-        assertEquals(7749, i);
+        assertEquals(100, call(Test2.class, "sm1"));
+        call(Test2.class, "sm2");
+        assertTrue(Test2.called);
+        assertEquals("hello: byx", call(Test2.class, "sm3", "byx"));
+        assertEquals(5, call(Test2.class, "sm4", 2, 3));
 
-        A a = (A) call(A.class, "create", 4321);
-        assertEquals(4321, a.getAge());
-
-        assertThrows(RuntimeException.class, () -> call(A.class, "create", 4321, true));
-
-        assertThrows(RuntimeException.class, () -> call(A.class, "create1", 4321));
+        assertThrows(RuntimeException.class, () -> call(Test2.class, "sm4", 2));
+        assertThrows(RuntimeException.class, () -> call(Test2.class, "sm4", "hello"));
+        assertThrows(RuntimeException.class, () -> call(Test2.class, "sm5"));
     }
 }

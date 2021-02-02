@@ -1,6 +1,7 @@
 package byx.util.reflect.test;
 
 import static byx.util.reflect.ReflectUtils.*;
+import byx.util.reflect.test.classes.Test1;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,37 +10,23 @@ public class CreateTest
     @Test
     public void test()
     {
-        A a = create(A.class);
-        assertEquals(17, a.getAge());
-        assertFalse(a.isFinish());
+        Test1 t1 = create(Test1.class);
+        assertTrue(t1.flag);
 
-        a = create(A.class, 23);
-        assertEquals(23, a.getAge());
-        assertFalse(a.isFinish());
+        Test1 t2 = create(Test1.class, 100);
+        assertEquals(100, t2.i);
 
-        a = create(A.class, true);
-        assertEquals(17, a.getAge());
-        assertTrue(a.isFinish());
+        Test1 t3 = create(Test1.class, 3.14);
+        assertEquals(3.14, t3.d);
 
-        a = create(A.class, new B());
-        assertEquals(17, a.getAge());
-        assertFalse(a.isFinish());
-        assertEquals(888, a.getB().getValue());
+        Test1 t4 = create(Test1.class, "hello");
+        assertEquals("hello", t4.s);
 
-        a = create(A.class, new BB(123));
-        assertEquals(17, a.getAge());
-        assertFalse(a.isFinish());
-        assertEquals(123, a.getB().getValue());
+        Test1 t5 = create(Test1.class, 123, 88.5, "hi");
+        assertEquals(123, t5.i);
+        assertEquals(88.5, t5.d);
+        assertEquals("hi", t5.s);
 
-        a = create(A.class, 75, true);
-        assertEquals(75, a.getAge());
-        assertTrue(a.isFinish());
-
-        a = create(A.class, true, 75);
-        assertEquals(75, a.getAge());
-        assertTrue(a.isFinish());
-
-        assertThrows(RuntimeException.class, () -> create(A.class, 1, 2, 3));
-        assertThrows(RuntimeException.class, () -> create(BB.class));
+        assertThrows(RuntimeException.class, () -> create(Test1.class, "hello", "hi"));
     }
 }
