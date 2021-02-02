@@ -65,15 +65,26 @@ public class ReflectUtils
      */
     public static <T> T create(Class<T> type, Object... params)
     {
-        for (Constructor<?> constructor : type.getConstructors())
+        try
         {
-            try
-            {
-                return type.cast(constructor.newInstance(params));
-            }
-            catch (Exception ignored) {}
+            Constructor<?> constructor = type.getConstructor(getTypes(params));
+            return type.cast(constructor.newInstance(params));
         }
-        throw new RuntimeException("No matching constructor.");
+        catch (Exception e)
+        {
+            for (Constructor<?> constructor : type.getConstructors())
+            {
+                if (constructor.getParameterCount() == params.length)
+                {
+                    try
+                    {
+                        return type.cast(constructor.newInstance(params));
+                    }
+                    catch (Exception ignored) {}
+                }
+            }
+            throw new RuntimeException("No matching constructor.");
+        }
     }
 
     /**
@@ -97,5 +108,15 @@ public class ReflectUtils
             }
         }
         throw new RuntimeException("No matching static method.");
+    }
+
+    private static Class<?>[] getTypes(Object... params)
+    {
+        Class<?>[] types = new Class[params.length];
+        for (int i = 0; i < params.length; ++i)
+        {
+            types[i] = params[i].getClass();
+        }
+        return types;
     }
 }
