@@ -118,6 +118,37 @@ public class ReflectUtils
         }
     }
 
+    /**
+     * 调用对象方法
+     * @param obj 对象
+     * @param methodName 方法名
+     * @param params 方法参数
+     * @return 方法返回值
+     */
+    public static Object call(Object obj, String methodName, Object... params)
+    {
+        try
+        {
+            Method method = obj.getClass().getMethod(methodName, getTypes(params));
+            return method.invoke(obj, params);
+        }
+        catch (Exception e)
+        {
+            for (Method method : obj.getClass().getMethods())
+            {
+                if (method.getName().equals(methodName) && method.getParameterCount() == params.length)
+                {
+                    try
+                    {
+                        return method.invoke(obj, params);
+                    }
+                    catch (Exception ignored) {}
+                }
+            }
+            throw new RuntimeException("No matching method.");
+        }
+    }
+
     private static Class<?>[] getTypes(Object... params)
     {
         Class<?>[] types = new Class[params.length];
