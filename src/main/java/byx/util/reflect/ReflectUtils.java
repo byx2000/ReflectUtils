@@ -3,6 +3,7 @@ package byx.util.reflect;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,33 +59,22 @@ public class ReflectUtils
     }
 
     /**
-     * 创建对象
-     * @param type 类型
-     * @param params 构造函数参数
-     * @param <T> 类型
-     * @return 通过调用特定构造函数创建的对象
+     * 调用构造函数创建对象
+     * @param type 要创建对象的类型
+     * @param params 参数
+     * @param <T> 返回类型
+     * @return 调用构造函数创建的对象
      */
     public static <T> T create(Class<T> type, Object... params)
     {
         try
         {
-            Constructor<?> constructor = type.getConstructor(getTypes(params));
-            return type.cast(constructor.newInstance(params));
+            return type.cast(getConstructor(type, getTypes(params)).newInstance(params));
         }
         catch (Exception e)
         {
-            for (Constructor<?> constructor : type.getConstructors())
-            {
-                if (constructor.getParameterCount() == params.length)
-                {
-                    try
-                    {
-                        return type.cast(constructor.newInstance(params));
-                    }
-                    catch (Exception ignored) {}
-                }
-            }
-            throw new RuntimeException("No matching constructor: " + type.getName());
+            throw new RuntimeException(String.format("Cannot invoke constructor of \"%s\" with parameters %s.",
+                    type.getCanonicalName(), Arrays.toString(params)), e);
         }
     }
 
@@ -174,6 +164,9 @@ public class ReflectUtils
         }
     }
 
+    /**
+     * 根据参数数组获取类型数组
+     */
     private static Class<?>[] getTypes(Object... params)
     {
         Class<?>[] types = new Class[params.length];
@@ -182,5 +175,55 @@ public class ReflectUtils
             types[i] = params[i].getClass();
         }
         return types;
+    }
+
+    /**
+     * 判断两个类型是否匹配（相同或者为包装类型关系）
+     */
+    private static boolean match(Class<?> c1, Class<?> c2)
+    {
+        return c1 == c2 || c1 == getWrap(c2) || c1 == getPrimitive(c2);
+    }
+
+    /**
+     * 判断两个类型列表是否匹配（列表长度相同且对应位置的类型相匹配）
+     */
+    private static boolean match(Class<?>[]c1, Class<?>[] c2)
+    {
+        if (c1.length == c2.length)
+        {
+            for (int i = 0; i < c1.length; ++i)
+            {
+                if (!match(c1[i], c2[i])) return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 根据参数类型获取构造函数
+     */
+    private static Constructor<?> getConstructor(Class<?> type, Class<?>[] parameterTypes)
+    {
+        try
+        {
+            return type.getConstructor(parameterTypes);
+        }
+        catch (Exception e)
+        {
+            for (Constructor<?> constructor : type.getConstructors())
+            {
+                if (constructor.getParameterCount() == parameterTypes.length)
+                {
+                    if (match(constructor.getParameterTypes(), parameterTypes))
+                    {
+                        return constructor;
+                    }
+                }
+            }
+            throw new RuntimeException(String.format("Cannot find constructor of \"%s\" with parameter types %s.",
+                    type.getCanonicalName(), Arrays.toString(parameterTypes)), e);
+        }
     }
 }
