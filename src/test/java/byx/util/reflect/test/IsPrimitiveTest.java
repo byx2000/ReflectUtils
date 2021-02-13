@@ -1,12 +1,15 @@
 package byx.util.reflect.test;
 
-import static byx.util.reflect.ReflectUtils.*;
-import byx.util.reflect.test.classes.Test1;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static byx.util.reflect.ReflectUtils.isPrimitive;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IsPrimitiveTest
 {
+    public static class A {}
+
     @Test
     public void test()
     {
@@ -29,6 +32,6 @@ public class IsPrimitiveTest
         assertFalse(isPrimitive(Boolean.class));
 
         assertFalse(isPrimitive(String.class));
-        assertFalse(isPrimitive(Test1.class));
+        assertFalse(isPrimitive(A.class));
     }
 }

@@ -93,14 +93,16 @@ public class ReflectUtils
      * @param type 类型
      * @param methodName 方法名
      * @param params 参数
+     * @param <T> 返回类型
      * @return 静态方法的返回值
      */
-    public static Object call(Class<?> type, String methodName, Object... params)
+    @SuppressWarnings("unchecked")
+    public static <T> T call(Class<?> type, String methodName, Object... params)
     {
         try
         {
             Method method = type.getMethod(methodName, getTypes(params));
-            return method.invoke(null, params);
+            return (T) method.invoke(null, params);
         }
         catch (Exception e)
         {
@@ -110,7 +112,7 @@ public class ReflectUtils
                 {
                     try
                     {
-                        return method.invoke(null, params);
+                        return (T) method.invoke(null, params);
                     }
                     catch (Exception ignored) {}
                 }
@@ -120,18 +122,20 @@ public class ReflectUtils
     }
 
     /**
-     * 调用对象方法
-     * @param obj 对象
+     * 调用实例方法
+     * @param obj 实例对象
      * @param methodName 方法名
-     * @param params 方法参数
-     * @return 方法返回值
+     * @param params 参数
+     * @param <T> 返回类型
+     * @return 实例方法的返回值
      */
-    public static Object call(Object obj, String methodName, Object... params)
+    @SuppressWarnings("unchecked")
+    public static <T> T call(Object obj, String methodName, Object... params)
     {
         try
         {
             Method method = obj.getClass().getMethod(methodName, getTypes(params));
-            return method.invoke(obj, params);
+            return (T) method.invoke(obj, params);
         }
         catch (Exception e)
         {
@@ -141,7 +145,7 @@ public class ReflectUtils
                 {
                     try
                     {
-                        return method.invoke(obj, params);
+                        return (T) method.invoke(obj, params);
                     }
                     catch (Exception ignored) {}
                 }

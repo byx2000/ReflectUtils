@@ -1,12 +1,14 @@
 package byx.util.reflect.test;
 
-import static byx.util.reflect.ReflectUtils.*;
-import byx.util.reflect.test.classes.Test1;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static byx.util.reflect.ReflectUtils.getWrap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GetWrapTest
 {
+    public static class A {}
+
     @Test
     public void test()
     {
@@ -29,6 +31,6 @@ public class GetWrapTest
         assertEquals(Boolean.class, getWrap(Boolean.class));
 
         assertEquals(String.class, getWrap(String.class));
-        assertEquals(Test1.class, getWrap(Test1.class));
+        assertEquals(A.class, getWrap(A.class));
     }
 }
