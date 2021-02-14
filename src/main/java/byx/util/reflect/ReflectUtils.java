@@ -91,23 +91,12 @@ public class ReflectUtils
     {
         try
         {
-            Method method = type.getMethod(methodName, getTypes(params));
-            return (T) method.invoke(null, params);
+            return (T) getMethod(type, methodName, getTypes(params)).invoke(null, params);
         }
         catch (Exception e)
         {
-            for (Method method : type.getMethods())
-            {
-                if (method.getName().equals(methodName) && method.getParameterCount() == params.length)
-                {
-                    try
-                    {
-                        return (T) method.invoke(null, params);
-                    }
-                    catch (Exception ignored) {}
-                }
-            }
-            throw new RuntimeException("No matching static method: " + methodName);
+            throw new RuntimeException(String.format("Cannot invoke static method \"%s\" of \"%s\" with parameters %s.",
+                    methodName, type.getCanonicalName(), Arrays.toString(params)), e);
         }
     }
 
@@ -124,23 +113,12 @@ public class ReflectUtils
     {
         try
         {
-            Method method = obj.getClass().getMethod(methodName, getTypes(params));
-            return (T) method.invoke(obj, params);
+            return (T) getMethod(obj.getClass(), methodName, getTypes(params)).invoke(obj, params);
         }
         catch (Exception e)
         {
-            for (Method method : obj.getClass().getMethods())
-            {
-                if (method.getName().equals(methodName) && method.getParameterCount() == params.length)
-                {
-                    try
-                    {
-                        return (T) method.invoke(obj, params);
-                    }
-                    catch (Exception ignored) {}
-                }
-            }
-            throw new RuntimeException("No matching method: " + methodName);
+            throw new RuntimeException(String.format("Cannot invoke method \"%s\" of \"%s\" with parameters %s.",
+                    methodName, obj.getClass().getCanonicalName(), Arrays.toString(params)), e);
         }
     }
 
@@ -180,9 +158,9 @@ public class ReflectUtils
     /**
      * 判断两个类型是否匹配（相同或者为包装类型关系）
      */
-    private static boolean match(Class<?> c1, Class<?> c2)
+    private static boolean match(Class<?> declaredType, Class<?> actualType)
     {
-        return c1 == c2 || c1 == getWrap(c2) || c1 == getPrimitive(c2);
+        return getWrap(declaredType).isAssignableFrom(getWrap(actualType));
     }
 
     /**
@@ -217,13 +195,35 @@ public class ReflectUtils
                 if (constructor.getParameterCount() == parameterTypes.length)
                 {
                     if (match(constructor.getParameterTypes(), parameterTypes))
-                    {
                         return constructor;
-                    }
                 }
             }
             throw new RuntimeException(String.format("Cannot find constructor of \"%s\" with parameter types %s.",
                     type.getCanonicalName(), Arrays.toString(parameterTypes)), e);
+        }
+    }
+
+    /**
+     * 根据参数类型和方法名获取方法
+     */
+    private static Method getMethod(Class<?> type, String name, Class<?>[] parameterTypes)
+    {
+        try
+        {
+            return type.getMethod(name, parameterTypes);
+        }
+        catch (Exception e)
+        {
+            for (Method method : type.getMethods())
+            {
+                if (method.getName().equals(name) && method.getParameterCount() == parameterTypes.length)
+                {
+                    if (match(method.getParameterTypes(), parameterTypes))
+                        return method;
+                }
+            }
+            throw new RuntimeException(String.format("Cannot find method \"%s\" of \"%s\" with parameter types %s.",
+                    name, type.getCanonicalName(), Arrays.toString(parameterTypes)), e);
         }
     }
 }
