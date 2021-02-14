@@ -143,6 +143,18 @@ public class ReflectUtils
     }
 
     /**
+     * 获取方法返回值类型
+     * @param type 方法所属的类
+     * @param methodName 方法名
+     * @param parameterTypes 参数类型数组
+     * @return 方法返回值类型
+     */
+    public static Class<?> getReturnType(Class<?> type, String methodName, Class<?>... parameterTypes)
+    {
+        return getMethod(type, methodName, parameterTypes).getReturnType();
+    }
+
+    /**
      * 根据参数数组获取类型数组
      */
     private static Class<?>[] getTypes(Object... params)
