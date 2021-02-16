@@ -4,9 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ReflectUtils
 {
@@ -171,6 +169,20 @@ public class ReflectUtils
             Array.set(array, i, elements[i]);
         }
         return (T) array;
+    }
+
+    /**
+     * 获取所有基类
+     * @param type 类型
+     * @return 该类型的所有基类
+     */
+    public static List<Class<?>> getSuperClasses(Class<?> type)
+    {
+        if (type == null || type.getSuperclass() == null) return new ArrayList<>();
+        List<Class<?>> superClasses = new ArrayList<>();
+        superClasses.add(type.getSuperclass());
+        superClasses.addAll(getSuperClasses(type.getSuperclass()));
+        return superClasses;
     }
 
     /**
