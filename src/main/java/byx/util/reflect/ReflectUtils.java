@@ -1,6 +1,7 @@
 package byx.util.reflect;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -152,6 +153,24 @@ public class ReflectUtils
     public static Class<?> getReturnType(Class<?> type, String methodName, Class<?>... parameterTypes)
     {
         return getMethod(type, methodName, parameterTypes).getReturnType();
+    }
+
+    /**
+     * 创建数组
+     * @param elementType 元素类型
+     * @param elements 元素
+     * @param <T> 返回类型
+     * @return 用指定元素创建的数组
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T createArray(Class<?> elementType, Object... elements)
+    {
+        Object array = Array.newInstance(elementType, elements.length);
+        for (int i = 0; i < elements.length; ++i)
+        {
+            Array.set(array, i, elements[i]);
+        }
+        return (T) array;
     }
 
     /**
