@@ -90,7 +90,9 @@ public class ReflectUtils
     {
         try
         {
-            return (T) getMethod(type, methodName, getTypes(params)).invoke(null, params);
+            Method method = getMethod(type, methodName, getTypes(params));
+            method.setAccessible(true);
+            return (T) method.invoke(null, params);
         }
         catch (Exception e)
         {
@@ -112,7 +114,9 @@ public class ReflectUtils
     {
         try
         {
-            return (T) getMethod(obj.getClass(), methodName, getTypes(params)).invoke(obj, params);
+            Method method = getMethod(obj.getClass(), methodName, getTypes(params));
+            method.setAccessible(true);
+            return (T) method.invoke(obj, params);
         }
         catch (Exception e)
         {
@@ -186,16 +190,39 @@ public class ReflectUtils
     }
 
     /**
+     * 获取最近公共基类
+     * @param c1 类1
+     * @param c2 类2
+     * @return c1和c2的最近公共基类
+     */
+    public static Class<?> getLatestCommonSuperClass(Class<?> c1, Class<?> c2)
+    {
+        if (c1.isAssignableFrom(c2)) return c1;
+        else if (c2.isAssignableFrom(c1)) return c2;
+
+        List<Class<?>> c1s = getSuperClasses(c1);
+        List<Class<?>> c2s = getSuperClasses(c2);
+        Class<?> c = Object.class;
+        int i = c1s.size() - 1, j = c2s.size() - 1;
+        while (i >= 0 && j >= 0)
+        {
+            if (c1s.get(i) == c2s.get(j))
+            {
+                c = c1s.get(i);
+                i--;
+                j--;
+            }
+            else break;
+        }
+        return c;
+    }
+
+    /**
      * 根据参数数组获取类型数组
      */
     private static Class<?>[] getTypes(Object... params)
     {
-        Class<?>[] types = new Class[params.length];
-        for (int i = 0; i < params.length; ++i)
-        {
-            types[i] = params[i].getClass();
-        }
-        return types;
+        return Arrays.stream(params).map(Object::getClass).toArray(Class<?>[]::new);
     }
 
     /**

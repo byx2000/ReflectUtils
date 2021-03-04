@@ -74,5 +74,12 @@ public class CallTest
 
         String r10 = call((Object) A.class, "getSimpleName");
         assertEquals("A", r10);
+
+        int r11 = call(new Object(){
+            public int f(int i) {
+                return i + 100;
+            }
+        }, "f", 123);
+        assertEquals(223, r11);
     }
 }
