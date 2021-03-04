@@ -49,21 +49,6 @@ public class ReflectUtils {
     }
 
     /**
-     * 获取基本类型
-     *
-     * @param type 类型
-     * @return 如果type是包装类型，则返回对应的基本类型，否则返回type
-     */
-    public static Class<?> getPrimitive(Class<?> type) {
-        for (Class<?> key : PRIMITIVE_AND_WRAP.keySet()) {
-            if (PRIMITIVE_AND_WRAP.get(key) == type) {
-                return key;
-            }
-        }
-        return type;
-    }
-
-    /**
      * 调用构造函数创建对象
      *
      * @param type   要创建对象的类型
@@ -169,52 +154,6 @@ public class ReflectUtils {
     }
 
     /**
-     * 获取所有基类
-     *
-     * @param type 类型
-     * @return 该类型的所有基类
-     */
-    public static List<Class<?>> getSuperClasses(Class<?> type) {
-        if (type == null || type.getSuperclass() == null) {
-            return new ArrayList<>();
-        }
-        List<Class<?>> superClasses = new ArrayList<>();
-        superClasses.add(type.getSuperclass());
-        superClasses.addAll(getSuperClasses(type.getSuperclass()));
-        return superClasses;
-    }
-
-    /**
-     * 获取最近公共基类
-     *
-     * @param c1 类1
-     * @param c2 类2
-     * @return c1和c2的最近公共基类
-     */
-    public static Class<?> getLatestCommonSuperClass(Class<?> c1, Class<?> c2) {
-        if (c1.isAssignableFrom(c2)) {
-            return c1;
-        } else if (c2.isAssignableFrom(c1)) {
-            return c2;
-        }
-
-        List<Class<?>> c1s = getSuperClasses(c1);
-        List<Class<?>> c2s = getSuperClasses(c2);
-        Class<?> c = Object.class;
-        int i = c1s.size() - 1, j = c2s.size() - 1;
-        while (i >= 0 && j >= 0) {
-            if (c1s.get(i) == c2s.get(j)) {
-                c = c1s.get(i);
-                i--;
-                j--;
-            } else {
-                break;
-            }
-        }
-        return c;
-    }
-
-    /**
      * 根据参数数组获取类型数组
      */
     private static Class<?>[] getTypes(Object... params) {
@@ -257,7 +196,8 @@ public class ReflectUtils {
                     }
                 }
             }
-            throw new RuntimeException(String.format("Cannot find constructor of \"%s\" with parameter types %s.", type.getCanonicalName(), Arrays.toString(parameterTypes)), e);
+            throw new RuntimeException(String.format("Cannot find constructor of \"%s\" with parameter types %s.",
+                    type.getCanonicalName(), Arrays.toString(parameterTypes)), e);
         }
     }
 
@@ -275,7 +215,8 @@ public class ReflectUtils {
                     }
                 }
             }
-            throw new RuntimeException(String.format("Cannot find method \"%s\" of \"%s\" with parameter types %s.", name, type.getCanonicalName(), Arrays.toString(parameterTypes)), e);
+            throw new RuntimeException(String.format("Cannot find method \"%s\" of \"%s\" with parameter types %s.",
+                    name, type.getCanonicalName(), Arrays.toString(parameterTypes)), e);
         }
     }
 }
