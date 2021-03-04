@@ -5,13 +5,12 @@ import org.junit.jupiter.api.Test;
 import static byx.util.reflect.ReflectUtils.getPrimitive;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GetPrimitiveTest
-{
-    public static class A {}
+public class GetPrimitiveTest {
+    public static class A {
+    }
 
     @Test
-    public void test()
-    {
+    public void test() {
         assertEquals(byte.class, getPrimitive(Byte.class));
         assertEquals(short.class, getPrimitive(Short.class));
         assertEquals(int.class, getPrimitive(Integer.class));

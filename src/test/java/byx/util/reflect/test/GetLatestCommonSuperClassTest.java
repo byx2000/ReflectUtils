@@ -1,20 +1,28 @@
 package byx.util.reflect.test;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static byx.util.reflect.ReflectUtils.*;
 
-public class GetLatestCommonSuperClassTest
-{
-    public static class A {}
-    public static class B {}
-    public static class C extends B {}
-    public static class D extends B {}
-    public static class E extends A {}
+public class GetLatestCommonSuperClassTest {
+    public static class A {
+    }
+
+    public static class B {
+    }
+
+    public static class C extends B {
+    }
+
+    public static class D extends B {
+    }
+
+    public static class E extends A {
+    }
 
     @Test
-    public void test()
-    {
+    public void test() {
         Class<?> r1 = getLatestCommonSuperClass(int.class, double.class);
         assertEquals(Object.class, r1);
         Class<?> r2 = getLatestCommonSuperClass(Object.class, String.class);

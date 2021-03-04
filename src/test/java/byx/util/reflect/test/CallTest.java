@@ -9,43 +9,35 @@ import static byx.util.reflect.ReflectUtils.call;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class CallTest
-{
-    public static class A
-    {
+public class CallTest {
+    public static class A {
         private final int i;
         private final String s;
 
-        public A(int i, String s)
-        {
+        public A(int i, String s) {
             this.i = i;
             this.s = s;
         }
 
-        public static int staticMethod1()
-        {
+        public static int staticMethod1() {
             return 123;
         }
 
-        public static String staticMethod2(String s, int i, Double x)
-        {
+        public static String staticMethod2(String s, int i, Double x) {
             return s + " " + i + " " + x;
         }
 
-        public int instanceMethod1()
-        {
+        public int instanceMethod1() {
             return i;
         }
 
-        public String instanceMethod2(String ss, int i, Double x)
-        {
+        public String instanceMethod2(String ss, int i, Double x) {
             return s + " " + ss + " " + i + " " + x;
         }
     }
 
     @Test
-    public void test()
-    {
+    public void test() {
         String r1 = call(String.class, "valueOf", 123);
         assertEquals("123", r1);
         List<?> r2 = call(Collections.class, "emptyList");
@@ -75,7 +67,7 @@ public class CallTest
         String r10 = call((Object) A.class, "getSimpleName");
         assertEquals("A", r10);
 
-        int r11 = call(new Object(){
+        int r11 = call(new Object() {
             public int f(int i) {
                 return i + 100;
             }

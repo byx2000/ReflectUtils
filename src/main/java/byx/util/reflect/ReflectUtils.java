@@ -6,72 +6,75 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class ReflectUtils
-{
-    private static final Map<Class<?>, Class<?>> primitiveAndWrap = new HashMap<>();
+/**
+ * 反射工具类
+ *
+ * @author byx
+ */
+public class ReflectUtils {
+    private static final Map<Class<?>, Class<?>> PRIMITIVE_AND_WRAP = new HashMap<>();
 
-    static
-    {
-        primitiveAndWrap.put(byte.class, Byte.class);
-        primitiveAndWrap.put(short.class, Short.class);
-        primitiveAndWrap.put(int.class, Integer.class);
-        primitiveAndWrap.put(long.class, Long.class);
-        primitiveAndWrap.put(float.class, Float.class);
-        primitiveAndWrap.put(double.class, Double.class);
-        primitiveAndWrap.put(char.class, Character.class);
-        primitiveAndWrap.put(boolean.class, Boolean.class);
+    static {
+        PRIMITIVE_AND_WRAP.put(byte.class, Byte.class);
+        PRIMITIVE_AND_WRAP.put(short.class, Short.class);
+        PRIMITIVE_AND_WRAP.put(int.class, Integer.class);
+        PRIMITIVE_AND_WRAP.put(long.class, Long.class);
+        PRIMITIVE_AND_WRAP.put(float.class, Float.class);
+        PRIMITIVE_AND_WRAP.put(double.class, Double.class);
+        PRIMITIVE_AND_WRAP.put(char.class, Character.class);
+        PRIMITIVE_AND_WRAP.put(boolean.class, Boolean.class);
     }
 
     /**
      * 判断是不是基本类型
+     *
      * @param type 类型
      * @return 如果type是基本类型，则返回true，否则返回false
      */
-    public static boolean isPrimitive(Class<?> type)
-    {
-        return primitiveAndWrap.containsKey(type);
+    public static boolean isPrimitive(Class<?> type) {
+        return PRIMITIVE_AND_WRAP.containsKey(type);
     }
 
     /**
      * 获取包装类型
+     *
      * @param type 类型
      * @return 如果type是基本类型，则返回对应的包装类型，否则返回type
      */
-    public static Class<?> getWrap(Class<?> type)
-    {
-        if (!isPrimitive(type)) return type;
-        return primitiveAndWrap.get(type);
+    public static Class<?> getWrap(Class<?> type) {
+        if (!isPrimitive(type)) {
+            return type;
+        }
+        return PRIMITIVE_AND_WRAP.get(type);
     }
 
     /**
      * 获取基本类型
+     *
      * @param type 类型
      * @return 如果type是包装类型，则返回对应的基本类型，否则返回type
      */
-    public static Class<?> getPrimitive(Class<?> type)
-    {
-        for (Class<?> key : primitiveAndWrap.keySet())
-        {
-            if (primitiveAndWrap.get(key) == type) return key;
+    public static Class<?> getPrimitive(Class<?> type) {
+        for (Class<?> key : PRIMITIVE_AND_WRAP.keySet()) {
+            if (PRIMITIVE_AND_WRAP.get(key) == type) {
+                return key;
+            }
         }
         return type;
     }
 
     /**
      * 调用构造函数创建对象
-     * @param type 要创建对象的类型
+     *
+     * @param type   要创建对象的类型
      * @param params 参数
-     * @param <T> 返回类型
+     * @param <T>    返回类型
      * @return 调用构造函数创建的对象
      */
-    public static <T> T create(Class<T> type, Object... params)
-    {
-        try
-        {
+    public static <T> T create(Class<T> type, Object... params) {
+        try {
             return type.cast(getConstructor(type, getTypes(params)).newInstance(params));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException(String.format("Cannot invoke constructor of \"%s\" with parameters %s.",
                     type.getCanonicalName(), Arrays.toString(params)), e);
         }
@@ -79,23 +82,20 @@ public class ReflectUtils
 
     /**
      * 调用静态方法
-     * @param type 类型
+     *
+     * @param type       类型
      * @param methodName 方法名
-     * @param params 参数
-     * @param <T> 返回类型
+     * @param params     参数
+     * @param <T>        返回类型
      * @return 静态方法的返回值
      */
     @SuppressWarnings("unchecked")
-    public static <T> T call(Class<?> type, String methodName, Object... params)
-    {
-        try
-        {
+    public static <T> T call(Class<?> type, String methodName, Object... params) {
+        try {
             Method method = getMethod(type, methodName, getTypes(params));
             method.setAccessible(true);
             return (T) method.invoke(null, params);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException(String.format("Cannot invoke static method \"%s\" of \"%s\" with parameters %s.",
                     methodName, type.getCanonicalName(), Arrays.toString(params)), e);
         }
@@ -103,23 +103,20 @@ public class ReflectUtils
 
     /**
      * 调用实例方法
-     * @param obj 实例对象
+     *
+     * @param obj        实例对象
      * @param methodName 方法名
-     * @param params 参数
-     * @param <T> 返回类型
+     * @param params     参数
+     * @param <T>        返回类型
      * @return 实例方法的返回值
      */
     @SuppressWarnings("unchecked")
-    public static <T> T call(Object obj, String methodName, Object... params)
-    {
-        try
-        {
+    public static <T> T call(Object obj, String methodName, Object... params) {
+        try {
             Method method = getMethod(obj.getClass(), methodName, getTypes(params));
             method.setAccessible(true);
             return (T) method.invoke(obj, params);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException(String.format("Cannot invoke method \"%s\" of \"%s\" with parameters %s.",
                     methodName, obj.getClass().getCanonicalName(), Arrays.toString(params)), e);
         }
@@ -127,49 +124,45 @@ public class ReflectUtils
 
     /**
      * 设置JavaBean的属性
-     * @param bean JavaBean实例
+     *
+     * @param bean         JavaBean实例
      * @param propertyName 属性名
-     * @param value 值
+     * @param value        值
      */
-    public static void setProperty(Object bean, String propertyName, Object value)
-    {
-        try
-        {
+    public static void setProperty(Object bean, String propertyName, Object value) {
+        try {
             PropertyDescriptor pd = new PropertyDescriptor(propertyName, bean.getClass());
             Method setter = pd.getWriteMethod();
             setter.invoke(bean, value);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
      * 获取方法返回值类型
-     * @param type 方法所属的类
-     * @param methodName 方法名
+     *
+     * @param type           方法所属的类
+     * @param methodName     方法名
      * @param parameterTypes 参数类型数组
      * @return 方法返回值类型
      */
-    public static Class<?> getReturnType(Class<?> type, String methodName, Class<?>... parameterTypes)
-    {
+    public static Class<?> getReturnType(Class<?> type, String methodName, Class<?>... parameterTypes) {
         return getMethod(type, methodName, parameterTypes).getReturnType();
     }
 
     /**
      * 创建数组
+     *
      * @param elementType 元素类型
-     * @param elements 元素
-     * @param <T> 返回类型
+     * @param elements    元素
+     * @param <T>         返回类型
      * @return 用指定元素创建的数组
      */
     @SuppressWarnings("unchecked")
-    public static <T> T createArray(Class<?> elementType, Object... elements)
-    {
+    public static <T> T createArray(Class<?> elementType, Object... elements) {
         Object array = Array.newInstance(elementType, elements.length);
-        for (int i = 0; i < elements.length; ++i)
-        {
+        for (int i = 0; i < elements.length; ++i) {
             Array.set(array, i, elements[i]);
         }
         return (T) array;
@@ -177,12 +170,14 @@ public class ReflectUtils
 
     /**
      * 获取所有基类
+     *
      * @param type 类型
      * @return 该类型的所有基类
      */
-    public static List<Class<?>> getSuperClasses(Class<?> type)
-    {
-        if (type == null || type.getSuperclass() == null) return new ArrayList<>();
+    public static List<Class<?>> getSuperClasses(Class<?> type) {
+        if (type == null || type.getSuperclass() == null) {
+            return new ArrayList<>();
+        }
         List<Class<?>> superClasses = new ArrayList<>();
         superClasses.add(type.getSuperclass());
         superClasses.addAll(getSuperClasses(type.getSuperclass()));
@@ -191,28 +186,30 @@ public class ReflectUtils
 
     /**
      * 获取最近公共基类
+     *
      * @param c1 类1
      * @param c2 类2
      * @return c1和c2的最近公共基类
      */
-    public static Class<?> getLatestCommonSuperClass(Class<?> c1, Class<?> c2)
-    {
-        if (c1.isAssignableFrom(c2)) return c1;
-        else if (c2.isAssignableFrom(c1)) return c2;
+    public static Class<?> getLatestCommonSuperClass(Class<?> c1, Class<?> c2) {
+        if (c1.isAssignableFrom(c2)) {
+            return c1;
+        } else if (c2.isAssignableFrom(c1)) {
+            return c2;
+        }
 
         List<Class<?>> c1s = getSuperClasses(c1);
         List<Class<?>> c2s = getSuperClasses(c2);
         Class<?> c = Object.class;
         int i = c1s.size() - 1, j = c2s.size() - 1;
-        while (i >= 0 && j >= 0)
-        {
-            if (c1s.get(i) == c2s.get(j))
-            {
+        while (i >= 0 && j >= 0) {
+            if (c1s.get(i) == c2s.get(j)) {
                 c = c1s.get(i);
                 i--;
                 j--;
+            } else {
+                break;
             }
-            else break;
         }
         return c;
     }
@@ -220,29 +217,26 @@ public class ReflectUtils
     /**
      * 根据参数数组获取类型数组
      */
-    private static Class<?>[] getTypes(Object... params)
-    {
+    private static Class<?>[] getTypes(Object... params) {
         return Arrays.stream(params).map(Object::getClass).toArray(Class<?>[]::new);
     }
 
     /**
      * 判断两个类型是否匹配（相同或者为包装类型关系）
      */
-    private static boolean match(Class<?> declaredType, Class<?> actualType)
-    {
+    private static boolean match(Class<?> declaredType, Class<?> actualType) {
         return getWrap(declaredType).isAssignableFrom(getWrap(actualType));
     }
 
     /**
      * 判断两个类型列表是否匹配（列表长度相同且对应位置的类型相匹配）
      */
-    private static boolean match(Class<?>[]c1, Class<?>[] c2)
-    {
-        if (c1.length == c2.length)
-        {
-            for (int i = 0; i < c1.length; ++i)
-            {
-                if (!match(c1[i], c2[i])) return false;
+    private static boolean match(Class<?>[] c1, Class<?>[] c2) {
+        if (c1.length == c2.length) {
+            for (int i = 0; i < c1.length; ++i) {
+                if (!match(c1[i], c2[i])) {
+                    return false;
+                }
             }
             return true;
         }
@@ -252,48 +246,36 @@ public class ReflectUtils
     /**
      * 根据参数类型获取构造函数
      */
-    private static Constructor<?> getConstructor(Class<?> type, Class<?>[] parameterTypes)
-    {
-        try
-        {
+    private static Constructor<?> getConstructor(Class<?> type, Class<?>[] parameterTypes) {
+        try {
             return type.getConstructor(parameterTypes);
-        }
-        catch (Exception e)
-        {
-            for (Constructor<?> constructor : type.getConstructors())
-            {
-                if (constructor.getParameterCount() == parameterTypes.length)
-                {
-                    if (match(constructor.getParameterTypes(), parameterTypes))
+        } catch (Exception e) {
+            for (Constructor<?> constructor : type.getConstructors()) {
+                if (constructor.getParameterCount() == parameterTypes.length) {
+                    if (match(constructor.getParameterTypes(), parameterTypes)) {
                         return constructor;
+                    }
                 }
             }
-            throw new RuntimeException(String.format("Cannot find constructor of \"%s\" with parameter types %s.",
-                    type.getCanonicalName(), Arrays.toString(parameterTypes)), e);
+            throw new RuntimeException(String.format("Cannot find constructor of \"%s\" with parameter types %s.", type.getCanonicalName(), Arrays.toString(parameterTypes)), e);
         }
     }
 
     /**
      * 根据参数类型和方法名获取方法
      */
-    private static Method getMethod(Class<?> type, String name, Class<?>[] parameterTypes)
-    {
-        try
-        {
+    private static Method getMethod(Class<?> type, String name, Class<?>[] parameterTypes) {
+        try {
             return type.getMethod(name, parameterTypes);
-        }
-        catch (Exception e)
-        {
-            for (Method method : type.getMethods())
-            {
-                if (method.getName().equals(name) && method.getParameterCount() == parameterTypes.length)
-                {
-                    if (match(method.getParameterTypes(), parameterTypes))
+        } catch (Exception e) {
+            for (Method method : type.getMethods()) {
+                if (method.getName().equals(name) && method.getParameterCount() == parameterTypes.length) {
+                    if (match(method.getParameterTypes(), parameterTypes)) {
                         return method;
+                    }
                 }
             }
-            throw new RuntimeException(String.format("Cannot find method \"%s\" of \"%s\" with parameter types %s.",
-                    name, type.getCanonicalName(), Arrays.toString(parameterTypes)), e);
+            throw new RuntimeException(String.format("Cannot find method \"%s\" of \"%s\" with parameter types %s.", name, type.getCanonicalName(), Arrays.toString(parameterTypes)), e);
         }
     }
 }

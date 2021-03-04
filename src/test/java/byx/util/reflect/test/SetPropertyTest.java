@@ -5,63 +5,51 @@ import org.junit.jupiter.api.Test;
 import static byx.util.reflect.ReflectUtils.setProperty;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SetPropertyTest
-{
-    public static class Student
-    {
+public class SetPropertyTest {
+    public static class Student {
         private int id;
         private String name;
         private Double score;
 
-        public int getId()
-        {
+        public int getId() {
             return id;
         }
 
-        public void setId(int id)
-        {
+        public void setId(int id) {
             this.id = id;
         }
 
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
-        public void setName(String name)
-        {
+        public void setName(String name) {
             this.name = name;
         }
 
-        public Double getScore()
-        {
+        public Double getScore() {
             return score;
         }
 
-        public void setScore(Double score)
-        {
+        public void setScore(Double score) {
             this.score = score;
         }
     }
 
-    public static class Student2 extends Student
-    {
+    public static class Student2 extends Student {
         private boolean male;
 
-        public boolean isMale()
-        {
+        public boolean isMale() {
             return male;
         }
 
-        public void setMale(boolean male)
-        {
+        public void setMale(boolean male) {
             this.male = male;
         }
     }
 
     @Test
-    public void test()
-    {
+    public void test() {
         Student r1 = new Student();
         setProperty(r1, "id", 1001);
         setProperty(r1, "name", "XiaoMing");

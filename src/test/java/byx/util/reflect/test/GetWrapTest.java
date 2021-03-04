@@ -5,13 +5,12 @@ import org.junit.jupiter.api.Test;
 import static byx.util.reflect.ReflectUtils.getWrap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GetWrapTest
-{
-    public static class A {}
+public class GetWrapTest {
+    public static class A {
+    }
 
     @Test
-    public void test()
-    {
+    public void test() {
         assertEquals(Byte.class, getWrap(byte.class));
         assertEquals(Short.class, getWrap(short.class));
         assertEquals(Integer.class, getWrap(int.class));

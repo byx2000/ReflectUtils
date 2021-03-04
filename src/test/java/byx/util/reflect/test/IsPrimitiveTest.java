@@ -6,13 +6,12 @@ import static byx.util.reflect.ReflectUtils.isPrimitive;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class IsPrimitiveTest
-{
-    public static class A {}
+public class IsPrimitiveTest {
+    public static class A {
+    }
 
     @Test
-    public void test()
-    {
+    public void test() {
         assertTrue(isPrimitive(byte.class));
         assertTrue(isPrimitive(short.class));
         assertTrue(isPrimitive(int.class));

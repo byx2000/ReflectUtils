@@ -1,27 +1,23 @@
 package byx.util.reflect.test;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static byx.util.reflect.ReflectUtils.*;
 
-public class GetReturnTypeTest
-{
-    public static class A
-    {
-        public static int getInt()
-        {
+public class GetReturnTypeTest {
+    public static class A {
+        public static int getInt() {
             return 123;
         }
 
-        public Double getDouble(int x)
-        {
+        public Double getDouble(int x) {
             return 3.14 + x;
         }
     }
 
     @Test
-    public void test()
-    {
+    public void test() {
         Class<?> r1 = getReturnType(String.class, "valueOf", Integer.class);
         assertEquals(r1, String.class);
         Class<?> r2 = getReturnType(String.class, "length");

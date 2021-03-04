@@ -1,26 +1,24 @@
 package byx.util.reflect.test;
 
 import static byx.util.reflect.ReflectUtils.*;
+
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CreateTest
-{
-    public static class A
-    {
+public class CreateTest {
+    public static class A {
         public int i;
         public Double x;
         public String s;
 
-        public A()
-        {
+        public A() {
             this.i = 123;
             this.x = 3.14;
             this.s = "hello";
         }
 
-        public A(int i, Double x, String s)
-        {
+        public A(int i, Double x, String s) {
             this.i = i;
             this.x = x;
             this.s = s;
@@ -28,8 +26,7 @@ public class CreateTest
     }
 
     @Test
-    public void test()
-    {
+    public void test() {
         String r1 = create(String.class);
         assertEquals("", r1);
         String r2 = create(String.class, "hello");
