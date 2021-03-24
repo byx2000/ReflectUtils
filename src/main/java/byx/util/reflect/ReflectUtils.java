@@ -1,6 +1,7 @@
 package byx.util.reflect;
 
 import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -151,6 +152,42 @@ public class ReflectUtils {
             Array.set(array, i, elements[i]);
         }
         return (T) array;
+    }
+
+    /**
+     * 获取指定包中的所有类
+     * @param packageName 包名
+     * @return 包中的所有类列表类列表
+     */
+    public static List<Class<?>> getPackageClasses(String packageName) {
+        String packagePath = packageName.replace(".", File.separator);
+        File classpath = new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getFile());
+        File root = new File(classpath, packagePath);
+        List<Class<?>> classes = new ArrayList<>();
+        traverseAllClassFiles(classpath.getAbsolutePath(), root, classes);
+        return classes;
+    }
+
+    /**
+     * 遍历所有.class文件
+     */
+    private static void traverseAllClassFiles(String classPath, File file, List<Class<?>> classes) {
+        if (!file.isDirectory()) {
+            if (file.getName().endsWith(".class")) {
+                String classFilePath = file.getAbsolutePath();
+                String fullClassName = classFilePath.substring(classPath.length() + 1, classFilePath.length() - 6).replace(File.separator, ".");
+                try {
+                    classes.add(Class.forName(fullClassName));
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return;
+        }
+
+        for (File f : Objects.requireNonNull(file.listFiles())) {
+            traverseAllClassFiles(classPath, f, classes);
+        }
     }
 
     /**
